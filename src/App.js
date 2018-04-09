@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import logo from './logo.svg'
 import './App.css'
-import { Query } from 'react-apollo'
+import { Query, Mutation } from 'react-apollo'
 import gql from 'graphql-tag'
 
 const GET_WEB3 = gql`
@@ -14,6 +14,41 @@ const GET_WEB3 = gql`
     }
   }
 `
+
+const REGISTER_DOMAIN = gql`
+  mutation registerTestDomain($name: String!) {
+    registerTestDomain(name: $name) {
+      id
+    }
+  }
+`
+
+const RegisterSubdomain = () => {
+  let input
+
+  return (
+    <Mutation mutation={REGISTER_DOMAIN}>
+      {registerTestDomain => (
+        <div>
+          <form
+            onSubmit={e => {
+              e.preventDefault()
+              registerTestDomain({ variables: { name: input.value } })
+              input.value = ''
+            }}
+          >
+            <input
+              ref={node => {
+                input = node
+              }}
+            />
+            <button type="submit">Register subdomain</button>
+          </form>
+        </div>
+      )}
+    </Mutation>
+  )
+}
 
 class App extends Component {
   render() {
@@ -34,6 +69,7 @@ class App extends Component {
                   ? `Your ETH address is ${web3.accounts[0]}`
                   : 'Unlock metamask!'}
               </div>
+              <RegisterSubdomain />
             </div>
           )
         }}

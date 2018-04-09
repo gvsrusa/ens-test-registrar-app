@@ -1,5 +1,6 @@
 import 'isomorphic-fetch'
 import getWeb3, { getAccounts } from './web3'
+import { getFifsRegistrarContract } from './ens'
 
 const users = {
   //singleton could hold local state
@@ -41,6 +42,35 @@ const resolvers = {
             image: person.image
           }))
         )
+  },
+
+  Mutation: {
+    registerTestDomain: async (object, { name }, context) => {
+      const { registrar, web3 } = await getFifsRegistrarContract()
+      const accounts = await getAccounts()
+      // const canRegister =
+      //   new Date() <
+      //   new Date(registrar.expiryTimes(web3.sha3(name)).toNumber() * 1000)
+      console.log(accounts, registrar, web3)
+      console.log(name)
+
+      return new Promise((resolve, reject) => {
+        registrar.register(
+          web3.sha3(name),
+          accounts[0],
+          {
+            from: accounts[0]
+          },
+          (error, txId) => {
+            if (true) {
+              resolve(txId)
+            } else {
+              reject(error)
+            }
+          }
+        )
+      })
+    }
   }
 }
 
