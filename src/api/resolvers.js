@@ -1,6 +1,8 @@
 import 'isomorphic-fetch'
 import getWeb3, { getAccounts } from './web3'
 import { getFifsRegistrarContract } from './ens'
+import pubsub from './pubsub'
+import { withFilter } from 'graphql-subscriptions'
 
 const users = {
   //singleton could hold local state
@@ -70,6 +72,24 @@ const resolvers = {
           }
         )
       })
+    }
+  },
+
+  Subscription: {
+    commentAdded: {
+      // resolve: payload => {
+      //   console.log(payload)
+      //   return {
+      //     id: '45678'
+      //   }
+      // },
+      subscribe: withFilter(
+        () => pubsub.asyncIterator('commentAdded'),
+        (payload, variables) => {
+          console.log('something happening', payload)
+          return payload
+        }
+      )
     }
   }
 }
