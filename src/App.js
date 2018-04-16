@@ -5,24 +5,18 @@ import { Query, Mutation, Subscription } from 'react-apollo'
 import gql from 'graphql-tag'
 import 'ethereum-ens'
 
-// class DataStoreProvider extends React.Component {
-//   state = { theme: 'light' }
-//   render() {
-//     return (
-//       <ThemeContext.Provider value={this.state.theme}>
-//         {this.props.children}
-//       </ThemeContext.Provider>
-//     )
-//   }
-// }
-
 const GET_WEB3 = gql`
   query web3 {
-    loggedInUser {
+    loggedInUser @client {
       name
     }
-    web3 {
+    web3 @client {
       accounts
+    }
+    people @client {
+      id
+      name
+      image
     }
   }
 `
@@ -84,19 +78,23 @@ class App extends Component {
         <Query query={GET_WEB3}>
           {({ loading, error, data }) => {
             if (loading) return <div>Loading web3</div>
-            const { web3, loggedInUser } = data
+            const { web3, loggedInUser, people } = data
+            console.log(data)
             return (
               <div className="App">
                 <header className="App-header">
                   <img src={logo} className="App-logo" alt="logo" />
                   <h1 className="App-title">Welcome to React</h1>
                 </header>
-                <div>What's up {loggedInUser.name}</div>
+                {console.log(data)}
+                {loggedInUser ? <div>What's up {loggedInUser.name}</div> : null}
+
                 <div>
                   {web3.accounts.length > 0
                     ? `Your ETH address is ${web3.accounts[0]}`
                     : 'Unlock metamask!'}
                 </div>
+                <div>{console.log(people)}</div>
                 <RegisterSubdomain />
               </div>
             )

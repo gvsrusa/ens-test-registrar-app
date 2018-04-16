@@ -13,7 +13,8 @@ const users = {
     avatar: {
       url:
         'https://vignette.wikia.nocookie.net/doug/images/4/42/Doug01.jpeg/revision/latest'
-    }
+    },
+    __typename: 'User'
   },
   patty: {
     id: 17,
@@ -22,7 +23,8 @@ const users = {
     avatar: {
       url:
         'https://vignette.wikia.nocookie.net/doug/images/4/41/Patti_2.jpg/revision/latest'
-    }
+    },
+    __typename: 'User'
   }
 }
 
@@ -32,18 +34,27 @@ const resolvers = {
   },
   Query: {
     loggedInUser: () => users.doug, // could be local state
-    web3: () => getWeb3(), // data from the blockchain
-    people: () =>
-      // could call to any backend or REST api
-      fetch('https://emerald-ink.glitch.me/people')
-        .then(res => res.json())
-        .then(people =>
-          people.map(person => ({
-            name: person.name,
-            id: person.id,
-            image: person.image
-          }))
-        )
+    web3: async (_, variables, context) => {
+      try {
+        return {
+          ...(await getWeb3()),
+          __typename: 'Web3'
+        }
+      } catch (e) {
+        console.error(e)
+        return null
+      }
+    },
+    async people() {
+      const response = await fetch('https://emerald-ink.glitch.me/people')
+      const people = await response.json()
+
+      return people.map(person => ({
+        ...person,
+        __typename: 'thing'
+      }))
+    }
+    // could call to any backend or REST api
   },
 
   Mutation: {
@@ -72,24 +83,6 @@ const resolvers = {
           }
         )
       })
-    }
-  },
-
-  Subscription: {
-    commentAdded: {
-      // resolve: payload => {
-      //   console.log(payload)
-      //   return {
-      //     id: '45678'
-      //   }
-      // },
-      subscribe: withFilter(
-        () => pubsub.asyncIterator('commentAdded'),
-        (payload, variables) => {
-          console.log('something happening', payload)
-          return payload
-        }
-      )
     }
   }
 }
