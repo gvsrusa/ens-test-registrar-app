@@ -12,7 +12,6 @@ import { withClientState } from 'apollo-link-state'
 import resolvers from './api/resolvers'
 import typeDefs from './api/schema'
 import { ApolloProvider } from 'react-apollo'
-import pubsub from './api/pubsub'
 
 // const schema = makeExecutableSchema({
 //   typeDefs,

@@ -1,8 +1,6 @@
 import 'isomorphic-fetch'
 import getWeb3, { getAccounts } from './web3'
 import { getFifsRegistrarContract } from './ens'
-import pubsub from './pubsub'
-import { withFilter } from 'graphql-subscriptions'
 
 const users = {
   //singleton could hold local state
