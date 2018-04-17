@@ -9,24 +9,11 @@ import { InMemoryCache } from 'apollo-cache-inmemory'
 import { SchemaLink } from 'apollo-link-schema'
 import { withClientState } from 'apollo-link-state'
 
-import resolvers from './api/resolvers'
+import resolvers, { defaults } from './api/resolvers'
 import typeDefs from './api/schema'
 import { ApolloProvider } from 'react-apollo'
 
-// const schema = makeExecutableSchema({
-//   typeDefs,
-//   resolvers
-// })
-
 const cache = new InMemoryCache(window.__APOLLO_STATE__)
-
-const defaults = {
-  web3: {
-    accounts: [],
-    __typename: 'Web3'
-  },
-  loggedIn: null
-}
 
 const graphqlClient = new ApolloClient({
   cache,

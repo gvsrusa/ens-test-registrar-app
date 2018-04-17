@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Fragment, Component } from 'react'
 import logo from './logo.svg'
 import './App.css'
 import { Query, Mutation } from 'react-apollo'
@@ -17,6 +17,24 @@ const GET_WEB3 = gql`
       id
       name
       image
+    }
+  }
+`
+
+const GET_PENDING_TRANSACTIONS = gql`
+  query getPendingTransations {
+    pendingTransactions @client {
+      id
+      createdAt
+    }
+  }
+`
+
+const GET_TRANSACTION_HISTORY = gql`
+  query getTransactionHistory {
+    transactionHistory @client {
+      id
+      createdAt
     }
   }
 `
@@ -66,31 +84,71 @@ class App extends Component {
   }
   render() {
     return (
-      <Query query={GET_WEB3}>
-        {({ loading, error, data }) => {
-          if (loading) return <div>Loading web3</div>
-          const { web3, loggedInUser, people } = data
-          console.log(data)
-          return (
-            <div className="App">
-              <header className="App-header">
-                <img src={logo} className="App-logo" alt="logo" />
-                <h1 className="App-title">Welcome to React</h1>
-              </header>
-              {console.log(data)}
-              {loggedInUser ? <div>What's up {loggedInUser.name}</div> : null}
+      <Fragment>
+        <Query query={GET_WEB3} pollInterval={500}>
+          {({ loading, error, data }) => {
+            if (loading) return <div>Loading web3</div>
+            const { web3, loggedInUser, people } = data
+            console.log(data)
+            return (
+              <div className="App">
+                <header className="App-header">
+                  <img src={logo} className="App-logo" alt="logo" />
+                  <h1 className="App-title">Welcome to React</h1>
+                </header>
+                {console.log(data)}
+                {loggedInUser ? <div>What's up {loggedInUser.name}</div> : null}
 
-              <div>
-                {web3.accounts.length > 0
-                  ? `Your ETH address is ${web3.accounts[0]}`
-                  : 'Unlock metamask!'}
+                <div>
+                  {web3.accounts.length > 0
+                    ? `Your ETH address is ${web3.accounts[0]}`
+                    : 'Unlock metamask!'}
+                </div>
+                <div>{console.log(people)}</div>
+                <RegisterSubdomain />
               </div>
-              <div>{console.log(people)}</div>
-              <RegisterSubdomain />
-            </div>
-          )
-        }}
-      </Query>
+            )
+          }}
+        </Query>
+        <Query query={GET_PENDING_TRANSACTIONS} pollInterval={500}>
+          {({ data, loading }) => {
+            const { pendingTransactions } = data
+            if (loading) return <div>Loading pending txs</div>
+            console.log(data)
+            return (
+              <div>
+                <h2>Pending Transactions</h2>
+                {pendingTransactions.map(tx => (
+                  <li>
+                    <a href={`http://ropsten.etherscan.io/tx/${tx.id}`}>
+                      {tx.id}
+                    </a>
+                  </li>
+                ))}
+              </div>
+            )
+          }}
+        </Query>
+        <Query query={GET_TRANSACTION_HISTORY}>
+          {({ data, loading }) => {
+            const { transactionHistory } = data
+            if (loading) return <div>Loading pending txs</div>
+            console.log(data)
+            return (
+              <div>
+                <h2>Transaction History</h2>
+                {transactionHistory.map(tx => (
+                  <li>
+                    <a href={`http://ropsten.etherscan.io/tx/${tx.id}`}>
+                      {tx.id}
+                    </a>
+                  </li>
+                ))}
+              </div>
+            )
+          }}
+        </Query>
+      </Fragment>
     )
   }
 }
