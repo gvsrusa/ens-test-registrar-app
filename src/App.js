@@ -7,9 +7,6 @@ import 'ethereum-ens'
 
 const GET_WEB3 = gql`
   query web3 {
-    loggedInUser @client {
-      name
-    }
     web3 @client {
       accounts
     }
@@ -88,7 +85,7 @@ class App extends Component {
         <Query query={GET_WEB3} pollInterval={500}>
           {({ loading, error, data }) => {
             if (loading) return <div>Loading web3</div>
-            const { web3, loggedInUser, people } = data
+            const { web3, people } = data
             console.log(data)
             return (
               <div className="App">
@@ -96,8 +93,6 @@ class App extends Component {
                   <img src={logo} className="App-logo" alt="logo" />
                   <h1 className="App-title">Welcome to React</h1>
                 </header>
-                {console.log(data)}
-                {loggedInUser ? <div>What's up {loggedInUser.name}</div> : null}
 
                 <div>
                   {web3.accounts.length > 0
@@ -110,7 +105,7 @@ class App extends Component {
             )
           }}
         </Query>
-        <Query query={GET_PENDING_TRANSACTIONS} pollInterval={500}>
+        <Query query={GET_PENDING_TRANSACTIONS}>
           {({ data, loading }) => {
             const { pendingTransactions } = data
             if (loading) return <div>Loading pending txs</div>
@@ -119,7 +114,7 @@ class App extends Component {
               <div>
                 <h2>Pending Transactions</h2>
                 {pendingTransactions.map(tx => (
-                  <li>
+                  <li tx={tx.id}>
                     <a href={`http://ropsten.etherscan.io/tx/${tx.id}`}>
                       {tx.id}
                     </a>
@@ -138,7 +133,7 @@ class App extends Component {
               <div>
                 <h2>Transaction History</h2>
                 {transactionHistory.map(tx => (
-                  <li>
+                  <li key={tx.id}>
                     <a href={`http://ropsten.etherscan.io/tx/${tx.id}`}>
                       {tx.id}
                     </a>

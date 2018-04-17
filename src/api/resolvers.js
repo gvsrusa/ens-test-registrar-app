@@ -26,36 +26,11 @@ const defaults = {
   ]
 }
 
-const users = {
-  //singleton could hold local state
-  doug: {
-    id: 8,
-    name: 'Doug Funnie',
-    url: 'http://doug.wikia.com/wiki/Doug_Funnie',
-    avatar: {
-      url:
-        'https://vignette.wikia.nocookie.net/doug/images/4/42/Doug01.jpeg/revision/latest'
-    },
-    __typename: 'User'
-  },
-  patty: {
-    id: 17,
-    name: 'Patty Mayonnaise',
-    url: 'http://doug.wikia.com/wiki/Patti_Mayonnaise',
-    avatar: {
-      url:
-        'https://vignette.wikia.nocookie.net/doug/images/4/41/Patti_2.jpg/revision/latest'
-    },
-    __typename: 'User'
-  }
-}
-
 const resolvers = {
   Web3: {
     accounts: () => getAccounts()
   },
   Query: {
-    loggedInUser: () => users.doug,
     web3: async (_, variables, context) => {
       try {
         return {
@@ -132,12 +107,9 @@ const resolvers = {
 
         cache.writeData({ data })
 
-        console.log(cache)
-
         watchRegistryEvent('NewOwner', name, (error, log, event) => {
           if (log.transactionHash === txId) {
             const { pendingTransactions } = cache.readQuery({ query })
-            console.log(pendingTransactions)
             const { transactionHistory } = cache.readQuery({
               query: gql`
                 query getTxHistory {
@@ -157,9 +129,7 @@ const resolvers = {
               ),
               transactionHistory: [...transactionHistory, ...successfulTx]
             }
-            console.log(data)
             cache.writeData({ data })
-            console.log(cache.readQuery({ query }))
             event.stopWatching()
           }
         })
