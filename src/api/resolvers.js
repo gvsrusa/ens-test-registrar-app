@@ -10,20 +10,8 @@ const defaults = {
     __typename: 'Web3'
   },
   loggedIn: null,
-  pendingTransactions: [
-    {
-      id: '123',
-      createdAt: new Date().toString(),
-      __typename: 'Transaction'
-    }
-  ],
-  transactionHistory: [
-    {
-      id: '456',
-      createdAt: new Date().toString(),
-      __typename: 'Transaction'
-    }
-  ]
+  pendingTransactions: [],
+  transactionHistory: []
 }
 
 const resolvers = {
