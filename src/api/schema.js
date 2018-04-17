@@ -14,6 +14,7 @@ const typeDefs = `
 
   type Transaction {
     id: String
+    createdAt: String
   }
 
   type Query {
@@ -26,14 +27,9 @@ const typeDefs = `
     registerTestDomain(name: String!): Transaction
   }
 
-  type Subscription {
-    commentAdded: Transaction
-  }
-
   schema {
     query: Query
     mutation: Mutation
-    subscription: Subscription
   }
 `
 
